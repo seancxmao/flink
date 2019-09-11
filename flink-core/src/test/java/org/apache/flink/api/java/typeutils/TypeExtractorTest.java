@@ -1299,6 +1299,9 @@ public class TypeExtractorTest {
 	}
 	
 	public static class InType extends MyObject<String> {}
+
+	public static class OutType extends MyObject<String> {}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	public void testParameterizedPojo() {
@@ -1313,6 +1316,22 @@ public class TypeExtractorTest {
 		TypeInformation<?> inType = TypeExtractor.createTypeInfo(InType.class);
 		TypeInformation<?> ti = TypeExtractor.getMapReturnTypes(function, (TypeInformation) inType);
 		Assert.assertTrue(ti instanceof PojoTypeInfo);
+	}
+
+	@Test
+	public void testParameterizedPojo2() {
+		RichMapFunction<?, ?> function = new RichMapFunction<InType, OutType>() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public OutType map(InType value) throws Exception {
+				return null;
+			}
+		};
+		TypeInformation<?> inType = TypeExtractor.createTypeInfo(InType.class);
+		TypeInformation<?> ti = TypeExtractor.getMapReturnTypes(function, (TypeInformation) inType);
+		Assert.assertTrue(ti instanceof PojoTypeInfo);
+		Assert.assertTrue(((PojoTypeInfo) ti).getTypeAt(0) == Types.STRING);
 	}
 	
 	@Test
